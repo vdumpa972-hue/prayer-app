@@ -7,7 +7,7 @@ workflows:
     environment:
       groups:
         - app-secrets
-      node: 20
+      node: 22
       xcode: latest
       cocoapods: default
 
