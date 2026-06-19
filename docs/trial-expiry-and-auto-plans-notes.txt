@@ -1,0 +1,36 @@
+AUTO-ROUTING + TRIAL EXPIRY PATCH
+
+Changed:
+- lib/auth.ts
+- app/auth/page.tsx
+- app/master/page.tsx
+- app/subscription/page.tsx
+
+What it does:
+1. Basic/free users are sent to /plans automatically after login
+2. Free users are blocked from using /master
+3. Expired trial users are blocked from using /master and sent to /subscription?trialExpired=1
+4. Subscription page shows a warning for expired trials and hides "Back to prayer window"
+5. Renewal date display now falls back to stripeCurrentPeriodEnd and, if needed, a simple first-cycle estimate
+
+How to test 30-day expiry:
+1. Create a TRIAL user normally
+2. In Firebase Realtime Database, open users/<uid>/profile
+3. Set:
+   - plan = "trial"
+   - subscriptionStatus = "trialing"
+   - trialEnd = (current time minus 60000)  // one minute in the past
+4. Log out and log back in
+5. Try /master
+6. Expected:
+   - user is redirected to /subscription?trialExpired=1
+   - subscription page shows the red expired-trial warning
+   - user cannot continue using the app until subscribing
+
+Easy way to calculate a past timestamp:
+- Open browser console and run:
+  Date.now() - 60000
+
+Easy way to restore a future trial:
+- In browser console:
+  Date.now() + 7 * 24 * 60 * 60 * 1000

@@ -1,0 +1,15 @@
+STRIPE WEBHOOK ROUTE BUILD FIX
+
+This replaces the generic route that hard-coded apiVersion 2023-10-16 and broke your build.
+
+What this file does:
+- uses your existing getStripe() helper
+- avoids writing undefined renewalDate to Firebase
+- supports checkout.session.completed, customer.subscription.*, invoice.paid,
+  invoice.payment_failed, invoice.payment_succeeded, and invoice_payment.paid
+- seeds Stripe IDs on checkout, then applies full paid profile mapping from subscription data
+
+After replacing:
+1. npm run build
+2. redeploy prayer-master
+3. test with a new user like vdumpa972+pay6@gmail.com

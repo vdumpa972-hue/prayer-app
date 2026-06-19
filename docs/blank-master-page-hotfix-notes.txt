@@ -1,0 +1,7 @@
+Blank master page hotfix
+
+Fixed app/master/page.tsx where clearSequence() was missing its closing brace.
+That caused the rest of the component render code to be nested inside clearSequence(), so /master returned no visible main UI.
+
+Build verification:
+- npm run build passed

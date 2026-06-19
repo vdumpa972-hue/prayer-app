@@ -1,0 +1,18 @@
+MASTER CHECKING LOGIN FIX
+
+Changed:
+- app/master/page.tsx
+
+What this fixes:
+- /master getting stuck forever on "Checking login..."
+
+What was wrong:
+- authReady state existed
+- the "Checking login..." guard existed
+- but the subscribeToAuth useEffect that should set authReady was missing
+
+What this patch adds:
+- subscribeToAuth listener
+- redirect to /auth if logged out
+- try/catch/finally so authReady always gets set
+- owner/admin label in the top user bar

@@ -1,0 +1,19 @@
+DISABLE SERVICE WORKER / PWA FOR NOW
+
+Changed:
+- app/layout.tsx
+- components/PwaRegister.tsx
+- public/sw.js
+
+What changed:
+1. Removed automatic service worker registration from the app layout
+2. Turned PwaRegister into a no-op component
+3. Replaced public/sw.js with a harmless no-op worker so old cached registrations stop breaking redirects
+
+IMPORTANT AFTER DEPLOY:
+1. Open the site
+2. Press F12
+3. Application -> Service workers -> Unregister
+4. Application -> Storage -> Clear site data
+5. Close all tabs for the site
+6. Open a fresh tab and test again

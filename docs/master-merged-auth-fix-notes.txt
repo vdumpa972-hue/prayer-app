@@ -1,0 +1,14 @@
+MERGED MASTER FIX
+
+Changed:
+- app/master/page.tsx
+
+Includes:
+- missing auth import
+- authReady/currentUserEmail/currentUserProfile state
+- subscribeToAuth effect
+- Checking login guard
+- account bar with Profile + Logout
+- owner/admin label display
+
+This version is meant to replace the previous partial fixes.

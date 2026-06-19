@@ -1,0 +1,9 @@
+Fixes:
+- excludes the temporary backup staging folder from the copy step
+- makes PowerShell stop on errors, so backup failure is real and visible
+- keeps the same backup -> build -> deploy flow
+
+Why the old one failed:
+- it created a temporary folder
+- then Get-ChildItem saw that folder too
+- then Copy-Item tried to copy the temp folder into itself

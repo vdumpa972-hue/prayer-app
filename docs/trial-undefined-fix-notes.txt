@@ -1,0 +1,17 @@
+TRIAL UNDEFINED VALUE FIX
+
+Changed:
+- lib/auth.ts
+
+What this fixes:
+- Realtime Database write failure caused by undefined fields in signUpTrialWithEmail
+- Specifically, renewalDate / trialStart / trialEnd were being written as undefined in some paths
+
+Fix:
+- Build the profile object without undefined values
+- Use object spread so fields are either present or absent
+
+After applying this fix:
+1. Delete the failed test user from Firebase Authentication
+2. Delete any partial DB row under users/<uid> if one exists
+3. Retry trial signup

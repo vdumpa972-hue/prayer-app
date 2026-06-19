@@ -1,0 +1,17 @@
+STRIPE WEBHOOK PAID STATUS FIX
+
+Changed:
+- app/api/stripe/webhook/route.ts
+
+What this fixes:
+- checkout was saving stripeCustomerId and stripeSubscriptionId
+- but plan/status/billingInterval stayed free/none
+
+Fix:
+- on checkout.session.completed, retrieve the subscription immediately and apply the full paid mapping
+- if subscription metadata is missing, fall back to customer metadata to find firebaseUid
+
+After replacing:
+1. npm run build
+2. redeploy prayer-master
+3. test with a new user like vdumpa972+pay4@gmail.com

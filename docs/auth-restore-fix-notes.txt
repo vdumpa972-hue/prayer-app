@@ -1,0 +1,8 @@
+AUTH RESTORE FIX
+
+This restores lib/auth.ts after it was accidentally replaced by a placeholder file.
+It also includes lib/profile.ts aligned with the restored auth types.
+
+Why build failed:
+- lib/auth.ts had no exports, so imports like getCurrentUserProfile, signOutUser, and subscribeToAuth failed.
+- That caused the 16 build errors reported in the log.

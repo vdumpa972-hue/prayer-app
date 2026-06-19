@@ -1,0 +1,9 @@
+STRIPE WEBHOOK INVOICE RETRIEVE CAST FIX
+
+Changed:
+- app/api/stripe/webhook/route.ts
+
+What this fixes:
+- TypeScript build error on stripe.invoices.retrieve(invoiceId)
+- Stripe SDK types expose retrieve() as a response wrapper, so we cast the returned invoice
+  before reading invoice.subscription

@@ -1,0 +1,1 @@
+Restores app/plans/page.tsx, app/trial/page.tsx, and app/subscription/page.tsx as valid modules.

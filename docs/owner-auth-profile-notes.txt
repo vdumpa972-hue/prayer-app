@@ -1,0 +1,24 @@
+OWNER + AUTH + PROFILE PATCH
+
+Added / changed files:
+- lib/firebase.ts
+- lib/auth.ts
+- lib/profile.ts
+- app/auth/page.tsx
+- app/profile/page.tsx
+- app/master/page.tsx
+
+What this patch does:
+1. Adds Firebase Auth export to lib/firebase.ts
+2. Adds user roles: owner | admin | user
+3. Your email vdumpa972@gmail.com creates role = owner
+4. Adds /auth page for login, signup, reset password
+5. Adds /profile page for full name, phone, address
+6. Protects /master so logged-out users are redirected to /auth
+7. Adds account bar + profile link + logout button to /master
+
+IMPORTANT:
+If your account already exists in Firebase, manually update:
+users/{your_uid}/profile/role = owner
+
+This code will only create future signups with owner automatically for your email.

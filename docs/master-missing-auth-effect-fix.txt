@@ -1,0 +1,17 @@
+MASTER MISSING AUTH EFFECT FIX
+
+Changed:
+- app/master/page.tsx
+
+What was wrong:
+- authReady state and "Checking login..." guard existed
+- but the subscribeToAuth useEffect was missing
+- result: /master stayed forever on "Checking login..."
+
+What this patch adds:
+- subscribeToAuth listener near the top of MasterPage
+- redirect to /auth when logged out
+- setCurrentUserEmail when logged in
+- setAuthReady(true) immediately after auth is confirmed
+- fetch profile in background and populate currentUserProfile
+- console error if profile load fails

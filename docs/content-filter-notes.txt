@@ -1,0 +1,11 @@
+Content filter update
+
+Implemented in app/master/page.tsx:
+- Added filters in Prayers > Current content / edit.
+- Filter by content type: All content, Books/libraries, Prayers, Speeches, Sermons.
+- Added free-text search across title, book, religion, origin/source, notes, category, tags, original text, and translation.
+- Shows count of matching books/libraries and matching items.
+- Shows a no-results message when nothing matches.
+
+Build:
+- npm run build passed.

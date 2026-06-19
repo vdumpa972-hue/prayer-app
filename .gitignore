@@ -39,3 +39,33 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
+.env*.local
+# IDE
+.idea/
+
+# Vercel local
+.vercel*
+.vercel-app/
+.vercel-follower/
+.vercel-master/
+
+# Android build outputs
+android/.gradle/
+android/build/
+android/app/build/
+
+# backups
+backups/
+
+# private signing keys
+*.jks
+*.keystore
+
+# generated packages
+*.aab
+*.apk
+
+# misc local
+node_modules/

@@ -1,0 +1,22 @@
+OWNER DASHBOARD TEST USERS PATCH
+
+Files changed:
+- app/page.tsx
+- app/owner-dashboard-client.tsx
+- lib/owner-users.ts
+
+What this adds:
+- Restores owner dashboard at root for app variant
+- Keeps server-side redirects for master/follower variants
+- Adds owner-only test user creation form
+- Adds test user delete action
+- Adds extra columns for subscription testing
+
+Important limitation:
+- Test users created here are DB-only dummy users
+- They will appear in the owner dashboard and can be used for UI/subscription state testing
+- They are NOT real Firebase Auth login accounts
+
+For real login-capable test users:
+- Use Gmail aliases like yourname+test1@gmail.com
+- Create them through the normal /auth signup flow

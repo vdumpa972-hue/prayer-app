@@ -1,0 +1,14 @@
+Prayer submenu arrow hotfix
+
+Changed:
+- app/master/page.tsx
+
+Behavior fixed:
+- Clicking the Prayers arrow now only expands/collapses the left-menu submenu.
+- It no longer opens the Current content / edit modal automatically.
+- The Current content / edit modal opens only after clicking that submenu item.
+- Add prayer library, Create new speech, and Prepare sermon also open only from their own submenu clicks.
+- Clicking outside closes the submenu/modal.
+
+Verification:
+- npm run build passed.

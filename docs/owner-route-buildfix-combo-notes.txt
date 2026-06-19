@@ -1,0 +1,21 @@
+OWNER ROUTE + BUILD FIX COMBO
+
+Files included:
+- app/owner/page.tsx
+- app/master/page.tsx
+
+Included fixes:
+1. Adds /owner route under master domain
+2. Adds Owner Dashboard link in master top bar
+3. currentSessionCode -> sessionCode
+4. useRef<Prayer | undefined>(undefined) -> useRef<Prayer | null>(null)
+5. bestEnd !== session.currentIndex -> bestEnd !== currentSession.currentIndex
+
+URLs after deploy:
+- https://prayer-master.vercel.app/auth
+- https://prayer-master.vercel.app/master
+- https://prayer-master.vercel.app/owner
+- https://prayer-follower.vercel.app/follower
+
+Note:
+I could not execute your full Next.js build inside your exact local environment, so this package is based on patching the source you uploaded and the concrete TypeScript errors you reported.

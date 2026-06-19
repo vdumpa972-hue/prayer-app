@@ -1,0 +1,20 @@
+ROOT VARIANT ROUTING FIX
+
+Changed:
+- app/page.tsx
+
+What this fixes:
+- prayer-follower root "/" was showing the wrong app and going to login
+- prayer-master root "/" was showing the wrong owner dashboard
+- now root route responds by deployment variant
+
+Behavior after this patch:
+- NEXT_PUBLIC_APP_VARIANT=app      -> keep owner dashboard at /
+- NEXT_PUBLIC_APP_VARIANT=master   -> / redirects to /master
+- NEXT_PUBLIC_APP_VARIANT=follower -> / redirects to /follower
+
+This works with your batch file because it already sets:
+- NEXT_PUBLIC_APP_VARIANT=app
+- NEXT_PUBLIC_APP_VARIANT=master
+- NEXT_PUBLIC_APP_VARIANT=follower
+before each deployment.

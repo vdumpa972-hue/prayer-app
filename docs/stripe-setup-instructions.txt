@@ -1,0 +1,61 @@
+STRIPE SUBSCRIPTION PATCH SETUP
+
+Files included:
+- package.json
+- lib/auth.ts
+- lib/firebase-server.ts
+- lib/stripe-server.ts
+- app/plans/page.tsx
+- app/subscription/page.tsx
+- app/api/stripe/checkout/route.ts
+- app/api/stripe/portal/route.ts
+- app/api/stripe/webhook/route.ts
+
+1) INSTALL DEPENDENCY
+Run:
+npm install
+
+2) STRIPE DASHBOARD SETUP
+In Stripe test mode:
+- Create one Product for your app (or two products if you prefer)
+- Create one recurring Price for monthly
+- Create one recurring Price for annual
+- Copy both price IDs
+
+3) VERCEL / .env.local VARIABLES
+Add these:
+STRIPE_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+STRIPE_PRICE_MONTHLY=price_...
+STRIPE_PRICE_ANNUAL=price_...
+NEXT_PUBLIC_APP_URL=https://prayer-master.vercel.app
+
+4) WEBHOOK SETUP IN STRIPE
+Add webhook endpoint:
+https://prayer-master.vercel.app/api/stripe/webhook
+
+Subscribe to these events:
+- checkout.session.completed
+- customer.subscription.created
+- customer.subscription.updated
+- customer.subscription.deleted
+- invoice.paid
+- invoice.payment_failed
+
+5) CUSTOMER PORTAL
+In Stripe Dashboard, enable the Billing Customer Portal so the Manage Billing button works.
+
+6) TEST FLOW
+A. Create or log into a real Firebase user
+B. Open /plans
+C. Choose monthly or annual
+D. Complete Stripe Checkout in test mode
+E. Return to /subscription
+F. Wait a few seconds and refresh /subscription
+G. Confirm that Stripe fields and status are updated from webhook events
+
+IMPORTANT
+- Real payment collection now happens in Stripe Checkout
+- Access changes should trust webhook-updated profile fields, not the browser redirect alone
+- Try test mode first before using a real card

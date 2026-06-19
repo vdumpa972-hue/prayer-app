@@ -1,0 +1,36 @@
+{
+  "traditions": [
+    {
+      "title": "Jewish",
+      "books": [
+        {
+          "title": "Siddur A",
+          "prayers": [
+            {
+              "title": "Shema",
+              "language": "he",
+              "originalText": "שמע ישראל יהוה אלהינו יהוה אחד",
+              "translationEnglish": "Hear, O Israel: the Lord is our God, the Lord is One."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Catholic",
+      "books": [
+        {
+          "title": "Basic Prayers",
+          "prayers": [
+            {
+              "title": "Our Father",
+              "language": "en",
+              "originalText": "Our Father who art in heaven hallowed be thy name",
+              "translationEnglish": "Opening of the Lord's Prayer."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

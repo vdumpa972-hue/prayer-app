@@ -1,0 +1,7 @@
+Changes made:
+- app/page.tsx: renamed the homepage "Open App" button to "Guest Demo".
+- app/page.tsx: Guest Demo no longer auto-logs in. It stores demo credentials in sessionStorage and opens /auth?forceLogin=1&demo=guest.
+- app/auth/page.tsx: when demo=guest is present, the login form is pre-filled with:
+  Email: vdumpa972+guest1@gmail.com
+  Password: liord972
+- The user must still manually click Login.

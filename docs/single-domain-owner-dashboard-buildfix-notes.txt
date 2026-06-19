@@ -1,0 +1,15 @@
+SINGLE-DOMAIN OWNER DASHBOARD + BUILD FIX
+
+Files included:
+- app/owner/page.tsx
+- app/master/page.tsx
+
+Fixes:
+1. Adds owner dashboard route under master domain:
+   /owner
+2. Adds Owner Dashboard link in master top bar for owner users
+3. Fixes build error by replacing:
+   currentSessionCode -> sessionCode
+
+No Firebase changes needed.
+No Vercel changes needed.

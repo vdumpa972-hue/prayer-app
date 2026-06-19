@@ -1,0 +1,10 @@
+MASTER IMPORT FIX
+
+Changed:
+- app/master/page.tsx
+
+What this fixes:
+- TypeScript error: Cannot find name 'subscribeToAuth'
+
+What was added:
+import { getCurrentUserProfile, signOutUser, subscribeToAuth, AppUserProfile } from "@/lib/auth";

@@ -1,0 +1,19 @@
+STRIPE WEBHOOK ROBUST FIX
+
+Changed:
+- app/api/stripe/webhook/route.ts
+
+What this fixes:
+- checkout.session.completed no longer fails the whole webhook after partially saving Stripe IDs
+- later events can still complete the Firebase sync
+- supports additional Stripe event names seen in sandbox:
+  - invoice.payment_succeeded
+  - invoice_payment.paid
+- avoids writing undefined renewal dates into Firebase
+
+After applying:
+1. npm run build
+2. redeploy prayer-master
+3. create a NEW user like vdumpa972+pay5@gmail.com
+4. test again
+5. rotate the webhook secret because it was pasted in chat

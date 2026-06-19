@@ -1,0 +1,28 @@
+{
+  "rules": {
+    "users": {
+      ".read": "auth != null && (auth.uid == 'd5bB5eJYvnS8UjfqON4aAeq6AF02' || auth.token.email == 'vdumpa972@gmail.com' || root.child('users').child(auth.uid).child('profile').child('role').val() == 'owner')",
+      ".write": "auth != null && (auth.uid == 'd5bB5eJYvnS8UjfqON4aAeq6AF02' || auth.token.email == 'vdumpa972@gmail.com' || root.child('users').child(auth.uid).child('profile').child('role').val() == 'owner')",
+      "$uid": {
+        ".read": "auth != null && ($uid == auth.uid || auth.uid == 'd5bB5eJYvnS8UjfqON4aAeq6AF02' || auth.token.email == 'vdumpa972@gmail.com' || root.child('users').child(auth.uid).child('profile').child('role').val() == 'owner')",
+        ".write": "auth != null && ($uid == auth.uid || auth.uid == 'd5bB5eJYvnS8UjfqON4aAeq6AF02' || auth.token.email == 'vdumpa972@gmail.com' || root.child('users').child(auth.uid).child('profile').child('role').val() == 'owner')"
+      }
+    },
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && (auth.uid == 'd5bB5eJYvnS8UjfqON4aAeq6AF02' || auth.token.email == 'vdumpa972@gmail.com' || root.child('users').child(auth.uid).child('profile').child('role').val() == 'owner')",
+      "ownerSecurity": {
+        ".read": true,
+        ".write": "auth != null && (auth.uid == 'd5bB5eJYvnS8UjfqON4aAeq6AF02' || auth.token.email == 'vdumpa972@gmail.com' || root.child('users').child(auth.uid).child('profile').child('role').val() == 'owner')"
+      }
+    },
+    "library": {
+      ".read": true,
+      ".write": "auth != null"
+    },
+    "sessions": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

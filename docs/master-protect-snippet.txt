@@ -1,0 +1,40 @@
+MASTER PAGE PROTECT SNIPPET
+
+Inside app/master/page.tsx:
+
+1) add imports:
+import { useEffect, useState } from "react";
+import { getCurrentUserProfile, signOutUser, subscribeToAuth, AppUserProfile } from "@/lib/auth";
+
+2) add state inside component:
+const [authReady, setAuthReady] = useState(false);
+const [currentUserEmail, setCurrentUserEmail] = useState("");
+const [currentUserProfile, setCurrentUserProfile] = useState<AppUserProfile | null>(null);
+
+3) add effect near top of component:
+useEffect(() => {
+  const unsub = subscribeToAuth(async (user) => {
+    if (!user) {
+      window.location.href = "/auth";
+      return;
+    }
+    setCurrentUserEmail(user.email || "");
+    const profile = await getCurrentUserProfile(user.uid);
+    setCurrentUserProfile(profile);
+    setAuthReady(true);
+  });
+  return () => unsub();
+}, []);
+
+4) before your main return:
+if (!authReady) {
+  return <div style={{ padding: 24, fontFamily: "Arial, Helvetica, sans-serif" }}>Checking login...</div>;
+}
+
+5) optionally add somewhere in master UI:
+<div style={{ padding: 12, fontSize: 16 }}>
+  Logged in as: {currentUserEmail}
+  {currentUserProfile?.role === "admin" ? " (admin)" : ""}
+  {" "}
+  <button onClick={() => signOutUser().then(() => (window.location.href = "/auth"))}>Logout</button>
+</div>

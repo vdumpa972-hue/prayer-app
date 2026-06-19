@@ -1,0 +1,80 @@
+MASTER PAGE USER BAR SNIPPET
+
+1) Add imports in app/master/page.tsx:
+import { getCurrentUserProfile, signOutUser, subscribeToAuth, AppUserProfile } from "@/lib/auth";
+
+2) Add state inside MasterPage():
+const [authReady, setAuthReady] = useState(false);
+const [currentUserEmail, setCurrentUserEmail] = useState("");
+const [currentUserProfile, setCurrentUserProfile] = useState<AppUserProfile | null>(null);
+
+3) Add auth guard effect near the top of MasterPage():
+useEffect(() => {
+  const unsub = subscribeToAuth(async (user) => {
+    if (!user) {
+      window.location.href = "/auth";
+      return;
+    }
+
+    setCurrentUserEmail(user.email || "");
+    const profile = await getCurrentUserProfile(user.uid);
+    setCurrentUserProfile(profile);
+    setAuthReady(true);
+  });
+
+  return () => unsub();
+}, []);
+
+4) Before your main return:
+if (!authReady) {
+  return (
+    <div style={{ padding: 24, fontFamily: "Arial, Helvetica, sans-serif" }}>
+      Checking login...
+    </div>
+  );
+}
+
+5) Add this user bar near the top of your master page UI:
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    gap: 16,
+    flexWrap: "wrap",
+    padding: "12px 16px",
+    background: "#f8fafc",
+    border: "1px solid #e5e7eb",
+    borderRadius: 12,
+    marginBottom: 16,
+    fontFamily: "Arial, Helvetica, sans-serif",
+  }}
+>
+  <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 16 }}>
+    <span style={{ fontSize: 20 }}>👤</span>
+    <span>
+      {currentUserEmail}
+      {currentUserProfile?.role === "admin" ? " (admin)" : ""}
+    </span>
+  </div>
+
+  <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+    <a href="/profile" style={{ color: "#1d4ed8", textDecoration: "underline" }}>
+      Profile
+    </a>
+
+    <button
+      onClick={() => signOutUser().then(() => (window.location.href = "/auth"))}
+      style={{
+        border: "1px solid #cbd5e1",
+        background: "#fff",
+        borderRadius: 10,
+        padding: "8px 12px",
+        cursor: "pointer",
+        fontSize: 15,
+      }}
+    >
+      Logout
+    </button>
+  </div>
+</div>

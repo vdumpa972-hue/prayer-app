@@ -1,0 +1,47 @@
+Prayer Master fixes - 2026-06-18 round 2
+
+Implemented from requested task list:
+
+1. Prayers menu/submenu
+- Removed the four prayer action buttons from the Prayers panel body.
+- Prayers in the left menu now has a small arrow indicator.
+- Opening Prayers shows the submenu under Prayers in the left column:
+  - Add prayer library
+  - Current content / edit
+  - Create new speech
+  - Prepare a sermon
+- Submenu opens without pushing the main page content down.
+- Clicking outside the panel closes it.
+
+2. Current content / edit
+- Renamed the view from Current prayers / edit to Current content / edit.
+- Lists all saved content in Firebase:
+  - books/libraries
+  - prayers
+  - sermons/custom sequences
+  - speeches
+- Each content row shows type, title, origin/source, book/library, and religion/tradition.
+- Books/libraries can be deleted with confirmation.
+- Prayers, sermons, and speeches can be edited or deleted with confirmation.
+
+3. Import progress and summaries
+- JSON file import, URL import, and sample-library import now show progress text while loading/saving.
+- After import, a popup summary shows:
+  - origin/source
+  - number of books/libraries
+  - number of items loaded
+  - sample loaded item names
+- Import summary is also displayed on screen after the popup.
+
+4. Selected-religion starter/sample library
+- The sample/starter import now loads only libraries matching the religion selected in Config.
+- If no religion is selected, import is blocked with a message.
+- Removed cross-religion online starter API buttons from the UI.
+- The library text now explains that the sample starter is tied to the selected religion.
+
+5. Metadata preservation
+- Imported JSON keeps prayer metadata and raw data.
+- Created speeches/sermons now include source origin metadata.
+
+Build result:
+- npm run build passed successfully.

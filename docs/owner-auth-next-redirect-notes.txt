@@ -1,0 +1,22 @@
+OWNER AUTH REDIRECT FIX
+
+Files changed:
+- app/auth/page.tsx
+- app/owner-dashboard-client.tsx
+- app/owner/page.tsx
+
+What this fixes:
+- /owner was redirecting to /auth, but after login auth always sent users to /master
+- now /auth honors a query parameter like ?next=/owner
+- owner page redirects logged-out users to:
+  https://prayer-master.vercel.app/auth?next=/owner
+- after login, auth redirects back to /owner
+
+No Firebase changes needed.
+No Vercel changes needed.
+
+How to test:
+1. Open https://prayer-master.vercel.app/owner in incognito
+2. You should go to /auth?next=/owner
+3. Login with owner account
+4. You should land on /owner, not /master

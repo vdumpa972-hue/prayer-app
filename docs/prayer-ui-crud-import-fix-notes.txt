@@ -1,0 +1,9 @@
+Prayer app changes in this ZIP:
+- Prayer side menu panels now float over the page instead of pushing content downward.
+- Clicking outside an open menu panel closes it.
+- Prayer library import shows visible progress/status text and imported samples.
+- Imported JSON preserves original metadata fields where possible, including source/origin.
+- Current prayers list shows each item origin/source and book/religion.
+- Each prayer/speech/sermon row has Edit and Delete actions.
+- Deleting a prayer/speech/sermon uses a confirmation popup.
+- Whole selected prayer book/library can be deleted with confirmation.

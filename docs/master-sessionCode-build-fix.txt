@@ -1,0 +1,11 @@
+MASTER SESSION CODE BUILD FIX
+
+Changed:
+- app/master/page.tsx
+
+Fix:
+- replaced currentSessionCode with sessionCode
+
+Reason:
+- currentSessionCode was not defined in scope
+- sessionCode is the correct variable name used by the page

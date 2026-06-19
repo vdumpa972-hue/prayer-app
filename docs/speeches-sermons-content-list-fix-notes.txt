@@ -1,0 +1,14 @@
+Speeches / sermons content list fix
+
+Problem:
+- Saving a sermon rewrote the Custom Collections Firebase node with only the Saved Sequences book.
+- That could remove/hide the Speeches book from Current content / edit.
+- Saving a speech also rewrote the custom collection in a fragile way.
+
+Fix:
+- saveSpeech now preserves every existing Custom Collections book and updates only the Speeches book.
+- saveCustomSequence now preserves every existing Custom Collections book and updates only the Saved Sequences book.
+- Current content / edit will show speeches/sermons as long as they exist in Firebase under Custom Collections.
+
+Note:
+- If a previous version already overwrote/deleted old speech records in Firebase, this fix prevents future loss but cannot restore deleted Firebase records.

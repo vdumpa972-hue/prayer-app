@@ -1,0 +1,17 @@
+This updated batch file does these steps in order:
+
+1. Creates a timestamped backup zip in /backups
+2. Excludes:
+   - node_modules
+   - .next
+   - .git
+   - backups
+   - .vercel
+3. Runs npm run build
+4. Only if build passes, deploys:
+   - APP
+   - MASTER
+   - FOLLOWER
+
+Recommended filename:
+build-all-app-master-follower-with-backup.bat

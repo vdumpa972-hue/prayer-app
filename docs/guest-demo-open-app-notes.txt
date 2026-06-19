@@ -1,0 +1,11 @@
+Guest demo Open App change
+
+Changed app/page.tsx.
+
+The public landing page Open App button now signs in the demo guest account and opens the app instead of linking to /app.
+
+Demo credentials used by the button:
+- vdumpa972+guest1@gmail.com
+- liord972
+
+If the demo login succeeds but the Firebase profile is missing, the landing page shows an error instead of silently failing.

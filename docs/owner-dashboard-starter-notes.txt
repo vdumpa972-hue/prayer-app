@@ -1,0 +1,21 @@
+OWNER DASHBOARD STARTER
+
+This page is meant for the prayer-app owner/admin console root page.
+
+File:
+- app/page.tsx
+
+What it does:
+- requires login
+- requires role = owner
+- redirects non-owner users to /master
+- loads users from Realtime Database path users/{uid}/profile
+- shows starter company stats
+- shows starter clients table
+- includes placeholders for billing and alerts
+
+Recommended next steps:
+1. Add edit/delete account actions
+2. Add subscriptionStatus, trialStart, trialEnd, memberSince fields
+3. Add billing integration and payment alerts
+4. Add separate Clients and Billing pages

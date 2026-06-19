@@ -1,0 +1,24 @@
+SINGLE-DOMAIN OWNER DASHBOARD PATCH
+
+Files changed:
+- app/owner/page.tsx
+- app/master/page.tsx
+
+What this does:
+- adds owner dashboard under the same domain as master:
+  /owner
+- reuses your existing owner dashboard client
+- adds an "Owner Dashboard" link in the master top user bar for owner users
+
+Recommended URLs after this patch:
+- Owner dashboard: https://prayer-master.vercel.app/owner
+- Master login:    https://prayer-master.vercel.app/auth
+- Master app:      https://prayer-master.vercel.app/master
+- Follower:        https://prayer-follower.vercel.app/follower
+
+Firebase changes needed:
+- none
+
+Vercel changes needed:
+- none required for this patch
+- you can ignore prayer-app-lemon for now

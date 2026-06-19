@@ -1,0 +1,22 @@
+OWNER ROUTE UNDER MASTER DOMAIN
+
+Files included:
+- app/owner/page.tsx
+- app/master/page.tsx
+
+What this gives you:
+- Owner dashboard accessible at:
+  https://prayer-master.vercel.app/owner
+- Owner Dashboard link in the master top bar for owner users
+
+Firebase changes needed:
+- none
+
+Vercel changes needed:
+- none
+
+Recommended URLs:
+- Login:   https://prayer-master.vercel.app/auth
+- Master:  https://prayer-master.vercel.app/master
+- Owner:   https://prayer-master.vercel.app/owner
+- Follower:https://prayer-follower.vercel.app/follower

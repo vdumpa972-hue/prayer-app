@@ -1,0 +1,18 @@
+OWNER DASHBOARD + MASTER ACCESS PATCH
+
+Files changed:
+- app/page.tsx
+- app/owner-dashboard-client.tsx
+- lib/owner-users.ts
+- app/master/page.tsx
+
+What this fixes:
+- Owner dashboard root restored for app variant
+- More fields restored in owner dashboard (phone, address, notes, updated)
+- Owner can keep using /auth and /master
+- Master no longer redirects owner away to owner dashboard
+- Test users can be created/deleted from owner dashboard
+
+Important:
+- Dummy/test users created in owner dashboard are DB-only and cannot log in
+- For login-capable test users, use Gmail aliases through /auth signup

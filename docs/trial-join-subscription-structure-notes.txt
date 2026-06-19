@@ -1,0 +1,34 @@
+TRIAL + JOIN + SUBSCRIPTION STRUCTURE PATCH
+
+Files included:
+- app/auth/page.tsx
+- app/trial/page.tsx
+- app/plans/page.tsx
+- app/subscription/page.tsx
+- lib/auth.ts
+- lib/profile.ts
+
+What this adds:
+1. /auth now shows:
+   - Login
+   - Start 30-Day Trial
+   - Join / Subscribe
+2. /trial creates a user profile with:
+   - plan=trial
+   - subscriptionStatus=trialing
+   - trialStart
+   - trialEnd
+3. /plans creates a paid-plan account structure with:
+   - plan=paid
+   - billingInterval monthly/annual
+   - subscriptionStatus=active
+   - renewalDate
+4. /subscription shows the current subscription fields
+
+Important:
+- Payment collection is still NOT connected
+- This patch creates the subscription/trial data structure and UI flow only
+- Stripe or other payment integration is the next step
+
+No Firebase changes required.
+No Vercel changes required.

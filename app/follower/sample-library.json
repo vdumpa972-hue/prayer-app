@@ -1,0 +1,42 @@
+{
+  "traditions": [
+    {
+      "id": "jewish",
+      "title": "Jewish",
+      "books": [
+        {
+          "id": "siddur_ashkenaz",
+          "title": "Siddur Ashkenaz",
+          "prayers": [
+            {
+              "id": "shema",
+              "title": "Shema",
+              "language": "he",
+              "originalText": "שמע ישראל יהוה אלהינו יהוה אחד ברוך שם כבוד מלכותו לעולם ועד",
+              "translationEnglish": "Hear, O Israel: the Lord is our God, the Lord is One. Blessed be the name of His glorious kingdom forever and ever."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "quran",
+      "title": "Quran",
+      "books": [
+        {
+          "id": "al_fatiha",
+          "title": "Al-Fatiha",
+          "prayers": [
+            {
+              "id": "surah_al_fatiha_opening",
+              "title": "Surah Al-Fatiha",
+              "language": "ar",
+              "originalText": "بسم الله الرحمن الرحيم الحمد لله رب العالمين الرحمن الرحيم مالك يوم الدين",
+              "translationEnglish": "In the name of Allah, the Entirely Merciful, the Especially Merciful. All praise is due to Allah, Lord of the worlds, the Entirely Merciful, the Especially Merciful, Sovereign of the Day of Recompense."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

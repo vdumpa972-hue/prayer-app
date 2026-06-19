@@ -1,0 +1,45 @@
+FLOW + BLOCK ACCESS FIX
+
+Updated files:
+- lib/auth.ts
+- app/auth/page.tsx
+- app/master/page.tsx
+- app/subscription/page.tsx
+- proxy.ts
+
+What this patch does:
+1. After login:
+   - free users go to /plans
+   - expired trial users go to /subscription?trialExpired=1
+   - paid and valid trial users go to the requested page or /master
+2. /master is blocked for:
+   - free users
+   - expired trial users
+3. A proxy adds a server-side redirect layer for /master
+4. Subscription page:
+   - shows renewal date fallback
+   - shows expired-trial/free-plan warnings
+   - hides Back to prayer window when access should be blocked
+
+How to test:
+A. Free/basic user
+- create a basic account from /auth
+- after login, expected destination: /plans
+- manually type /master
+- expected destination: /plans?from=master
+
+B. Paid user
+- log in with an active paid account
+- expected destination: /master
+- /subscription should show paid + active
+
+C. Expired trial user
+- in Firebase set:
+  - plan = "trial"
+  - subscriptionStatus = "trialing"
+  - trialEnd = a number in the past
+- clear site data or use incognito
+- log in again
+- expected destination after login: /subscription?trialExpired=1
+- manually type /master
+- expected destination: /subscription?trialExpired=1

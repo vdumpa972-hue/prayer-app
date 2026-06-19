@@ -1,148 +1,436 @@
 'use client';
 
-import { useEffect, useMemo, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useState } from "react";
 import { db } from "@/lib/firebase";
 import { onValue, ref, set, update } from "firebase/database";
 
 type Prayer = {
   id: string;
-  folder: string;
   title: string;
-  text: string;
+  language: string;
+  originalText: string;
+  translationEnglish?: string;
+  sourceType?: string;
+  sourceName?: string;
+};
+
+type Book = {
+  id: string;
+  title: string;
+  prayers: Prayer[];
+};
+
+type Tradition = {
+  id: string;
+  title: string;
+  books: Book[];
 };
 
 type SessionState = {
   code: string;
+  traditionId: string;
+  bookId: string;
   prayerId: string;
+  prayerTitle: string;
+  language: string;
   currentIndex: number;
   text: string;
+  translationEnglish?: string;
   updatedAt: number;
 };
 
-const PRAYERS: Prayer[] = [
+type PrayerImportFile = {
+  traditions: Tradition[];
+};
+
+const SAMPLE_LIBRARY: Tradition[] = [
   {
-    id: "shema",
-    folder: "Morning Prayers",
-    title: "Shema",
-    text: "Hear O Israel the Lord is our God the Lord is One Blessed be the name of His glorious kingdom forever and ever."
+    id: "jewish",
+    title: "Jewish",
+    books: [
+      {
+        id: "siddur_ashkenaz",
+        title: "Siddur Ashkenaz",
+        prayers: [
+          {
+            id: "shema",
+            title: "Shema",
+            language: "he",
+            originalText:
+              "??? ????? ???? ?????? ???? ??? ???? ?? ???? ?????? ????? ???",
+            translationEnglish:
+              "Hear, O Israel: the Lord is our God, the Lord is One. Blessed be the name of His glorious kingdom forever and ever.",
+            sourceType: "seed",
+            sourceName: "Sample Library"
+          },
+          {
+            id: "amidah_opening",
+            title: "Amidah Opening",
+            language: "he",
+            originalText:
+              "???? ???? ???? ??? ???? ?????",
+            translationEnglish:
+              "Lord, open my lips, and my mouth will declare Your praise.",
+            sourceType: "seed",
+            sourceName: "Sample Library"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: "amidah",
-    folder: "Morning Prayers",
-    title: "Amidah Opening",
-    text: "Lord open my lips and my mouth shall declare Your praise Blessed are You Lord our God and God of our fathers."
+    id: "catholic",
+    title: "Catholic",
+    books: [
+      {
+        id: "basic_prayers",
+        title: "Basic Prayers",
+        prayers: [
+          {
+            id: "our_father",
+            title: "Our Father",
+            language: "en",
+            originalText:
+              "Our Father who art in heaven hallowed be thy name thy kingdom come thy will be done on earth as it is in heaven",
+            translationEnglish:
+              "Traditional English prayer of the Lord's Prayer.",
+            sourceType: "seed",
+            sourceName: "Sample Library"
+          }
+        ]
+      }
+    ]
   },
   {
-    id: "kiddush",
-    folder: "Shabbat",
-    title: "Kiddush",
-    text: "Blessed are You Lord our God King of the universe who creates the fruit of the vine."
+    id: "quran",
+    title: "Quran",
+    books: [
+      {
+        id: "al_fatiha",
+        title: "Al-Fatiha",
+        prayers: [
+          {
+            id: "surah_al_fatiha_opening",
+            title: "Surah Al-Fatiha",
+            language: "ar",
+            originalText:
+              "??? ???? ?????? ?????? ????? ??? ?? ???????? ?????? ?????? ???? ??? ?????",
+            translationEnglish:
+              "In the name of Allah, the Entirely Merciful, the Especially Merciful. All praise is due to Allah, Lord of the worlds, the Entirely Merciful, the Especially Merciful, Sovereign of the Day of Recompense.",
+            sourceType: "seed",
+            sourceName: "Sample Library"
+          }
+        ]
+      }
+    ]
   }
 ];
 
 function splitWords(text: string) {
-  return text.split(/\s+/).map(w => w.trim()).filter(Boolean);
+  return text.split(/\s+/).map((w) => w.trim()).filter(Boolean);
 }
 
 function randomCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
 
-function getPrayerById(id: string) {
-  return PRAYERS.find(p => p.id === id) ?? PRAYERS[0];
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "") || "item";
+}
+
+function normalizeImport(data: PrayerImportFile): Tradition[] {
+  const traditions = Array.isArray(data?.traditions) ? data.traditions : [];
+
+  return traditions.map((tradition, traditionIndex) => ({
+    id: tradition.id || `${slugify(tradition.title || "tradition")}_${traditionIndex}`,
+    title: tradition.title || `Tradition ${traditionIndex + 1}`,
+    books: (tradition.books || []).map((book, bookIndex) => ({
+      id: book.id || `${slugify(book.title || "book")}_${bookIndex}`,
+      title: book.title || `Book ${bookIndex + 1}`,
+      prayers: (book.prayers || []).map((prayer, prayerIndex) => ({
+        id: prayer.id || `${slugify(prayer.title || "prayer")}_${prayerIndex}`,
+        title: prayer.title || `Prayer ${prayerIndex + 1}`,
+        language: prayer.language || "en",
+        originalText: prayer.originalText || "",
+        translationEnglish: prayer.translationEnglish || "",
+        sourceType: prayer.sourceType || "json_import",
+        sourceName: prayer.sourceName || "Local JSON Import"
+      }))
+    }))
+  }));
+}
+
+function traditionsArrayToDbObject(traditions: Tradition[]) {
+  return Object.fromEntries(
+    traditions.map((tradition) => [
+      tradition.id,
+      {
+        id: tradition.id,
+        title: tradition.title,
+        books: Object.fromEntries(
+          tradition.books.map((book) => [
+            book.id,
+            {
+              id: book.id,
+              title: book.title,
+              prayers: Object.fromEntries(
+                book.prayers.map((prayer) => [
+                  prayer.id,
+                  {
+                    ...prayer
+                  }
+                ])
+              )
+            }
+          ])
+        )
+      }
+    ])
+  );
+}
+
+function traditionsDbObjectToArray(value: any): Tradition[] {
+  if (!value || typeof value !== "object") return [];
+
+  return Object.values(value).map((tradition: any) => ({
+    id: tradition.id,
+    title: tradition.title,
+    books: tradition.books
+      ? Object.values(tradition.books).map((book: any) => ({
+          id: book.id,
+          title: book.title,
+          prayers: book.prayers
+            ? Object.values(book.prayers).map((prayer: any) => ({
+                id: prayer.id,
+                title: prayer.title,
+                language: prayer.language,
+                originalText: prayer.originalText,
+                translationEnglish: prayer.translationEnglish || "",
+                sourceType: prayer.sourceType || "",
+                sourceName: prayer.sourceName || ""
+              }))
+            : []
+        }))
+      : []
+  }));
+}
+
+function findTradition(traditions: Tradition[], traditionId: string) {
+  return traditions.find((t) => t.id === traditionId) ?? null;
+}
+
+function findBook(traditions: Tradition[], traditionId: string, bookId: string) {
+  return findTradition(traditions, traditionId)?.books.find((b) => b.id === bookId) ?? null;
+}
+
+function findPrayer(
+  traditions: Tradition[],
+  traditionId: string,
+  bookId: string,
+  prayerId: string
+) {
+  return (
+    findBook(traditions, traditionId, bookId)?.prayers.find((p) => p.id === prayerId) ?? null
+  );
+}
+
+function getFirstSelectable(traditions: Tradition[]) {
+  const firstTradition = traditions[0] ?? null;
+  const firstBook = firstTradition?.books[0] ?? null;
+  const firstPrayer = firstBook?.prayers[0] ?? null;
+
+  return {
+    traditionId: firstTradition?.id ?? "",
+    bookId: firstBook?.id ?? "",
+    prayerId: firstPrayer?.id ?? ""
+  };
 }
 
 export default function Home() {
+  const [traditions, setTraditions] = useState<Tradition[]>([]);
+  const [selectedTraditionId, setSelectedTraditionId] = useState("");
+  const [selectedBookId, setSelectedBookId] = useState("");
+  const [selectedPrayerId, setSelectedPrayerId] = useState("");
   const [sessionCode, setSessionCode] = useState("");
   const [session, setSessionState] = useState<SessionState | null>(null);
-  const [selectedPrayerId, setSelectedPrayerId] = useState(PRAYERS[0].id);
   const [isPlaying, setIsPlaying] = useState(false);
   const [speedMs, setSpeedMs] = useState(600);
-
-useEffect(() => {
-  if (!sessionCode) return;
-
-  const sessionRef = ref(db, `sessions/${sessionCode}`);
-
-  const unsub = onValue(sessionRef, (snapshot) => {
-    const data = snapshot.val();
-    console.log("MASTER SESSION UPDATE:", data);
-
-    if (data) {
-      setSessionState(data);
-    }
-  });
+  const [status, setStatus] = useState("idle");
 
   useEffect(() => {
-  if (!isPlaying) return;
-  if (!sessionCode || !session) return;
+    const libraryRef = ref(db, "library/traditions");
 
-  const maxIndex = Math.max(splitWords(session.text).length - 1, 0);
+    const unsub = onValue(libraryRef, (snapshot) => {
+      const data = traditionsDbObjectToArray(snapshot.val());
+      setTraditions(data);
 
-  if (session.currentIndex >= maxIndex) {
-    setIsPlaying(false);
-    return;
-  }
+      if (!data.length) {
+        setSelectedTraditionId("");
+        setSelectedBookId("");
+        setSelectedPrayerId("");
+        return;
+      }
 
-  const timer = setTimeout(async () => {
-    await update(ref(db, `sessions/${sessionCode}`), {
-      currentIndex: Math.min(session.currentIndex + 1, maxIndex),
-      updatedAt: Date.now()
+      setSelectedTraditionId((current) => {
+        const exists = data.some((t) => t.id === current);
+        return exists ? current : data[0].id;
+      });
     });
-  }, speedMs);
 
-  function playWords() {
-  if (!sessionCode || !session) return;
-  setIsPlaying(true);
-}
+    return () => unsub();
+  }, []);
 
-function pauseWords() {
-  setIsPlaying(false);
-}
-  return () => clearTimeout(timer);
-}, [isPlaying, speedMs, sessionCode, session]);
-  return () => unsub();
-}, [sessionCode]);
+  useEffect(() => {
+    const tradition = findTradition(traditions, selectedTraditionId);
+    if (!tradition) {
+      setSelectedBookId("");
+      setSelectedPrayerId("");
+      return;
+    }
 
+    setSelectedBookId((currentBookId) => {
+      const exists = tradition.books.some((b) => b.id === currentBookId);
+      return exists ? currentBookId : tradition.books[0]?.id ?? "";
+    });
+  }, [traditions, selectedTraditionId]);
+
+  useEffect(() => {
+    const book = findBook(traditions, selectedTraditionId, selectedBookId);
+    if (!book) {
+      setSelectedPrayerId("");
+      return;
+    }
+
+    setSelectedPrayerId((currentPrayerId) => {
+      const exists = book.prayers.some((p) => p.id === currentPrayerId);
+      return exists ? currentPrayerId : book.prayers[0]?.id ?? "";
+    });
+  }, [traditions, selectedTraditionId, selectedBookId]);
 
   useEffect(() => {
     if (!sessionCode) return;
+
     const sessionRef = ref(db, `sessions/${sessionCode}`);
+
     const unsub = onValue(sessionRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
         setSessionState(data);
-        setSelectedPrayerId(data.prayerId);
       }
     });
+
     return () => unsub();
   }, [sessionCode]);
 
-  const activePrayer = session ? getPrayerById(session.prayerId) : getPrayerById(selectedPrayerId);
-  const words = useMemo(() => splitWords(session?.text ?? activePrayer.text), [session, activePrayer]);
+  useEffect(() => {
+    if (!isPlaying) return;
+    if (!sessionCode || !session) return;
+
+    const maxIndex = Math.max(splitWords(session.text).length - 1, 0);
+
+    if (session.currentIndex >= maxIndex) {
+      setIsPlaying(false);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      await update(ref(db, `sessions/${sessionCode}`), {
+        currentIndex: Math.min(session.currentIndex + 1, maxIndex),
+        updatedAt: Date.now()
+      });
+    }, speedMs);
+
+    return () => clearTimeout(timer);
+  }, [isPlaying, speedMs, sessionCode, session]);
+
+  const selectedTradition = findTradition(traditions, selectedTraditionId);
+  const selectedBook = findBook(traditions, selectedTraditionId, selectedBookId);
+  const activePrayer = findPrayer(
+    traditions,
+    selectedTraditionId,
+    selectedBookId,
+    selectedPrayerId
+  );
+
+  const words = useMemo(
+    () => splitWords(session?.text ?? activePrayer?.originalText ?? ""),
+    [session, activePrayer]
+  );
+
   const currentIndex = session?.currentIndex ?? 0;
 
-  async function createSession() {
-    const code = randomCode();
-    const prayer = getPrayerById(selectedPrayerId);
-    const newSession: SessionState = {
-      code,
-      prayerId: prayer.id,
-      currentIndex: 0,
-      text: prayer.text,
-      updatedAt: Date.now()
-    };
-    await set(ref(db, `sessions/${code}`), newSession);
-    setSessionCode(code);
+  async function seedSampleLibrary() {
+    await set(ref(db, "library/traditions"), traditionsArrayToDbObject(SAMPLE_LIBRARY));
+    setStatus("sample library loaded");
   }
 
-  async function choosePrayer(prayerId: string) {
-    setSelectedPrayerId(prayerId);
-    if (!sessionCode) return;
-    const prayer = getPrayerById(prayerId);
+  async function handleJsonImport(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const raw = await file.text();
+      const parsed = JSON.parse(raw) as PrayerImportFile;
+      const normalized = normalizeImport(parsed);
+
+      if (!normalized.length) {
+        alert("No traditions found in JSON file");
+        return;
+      }
+
+      await set(ref(db, "library/traditions"), traditionsArrayToDbObject(normalized));
+      setStatus(`imported ${file.name}`);
+      e.target.value = "";
+    } catch (error) {
+      console.error(error);
+      alert("Could not import JSON file");
+    }
+  }
+
+  async function createSession() {
+    if (!activePrayer) {
+      alert("Choose a prayer first");
+      return;
+    }
+
+    setIsPlaying(false);
+
+    const code = randomCode();
+
+    const newSession: SessionState = {
+      code,
+      traditionId: selectedTraditionId,
+      bookId: selectedBookId,
+      prayerId: activePrayer.id,
+      prayerTitle: activePrayer.title,
+      language: activePrayer.language,
+      currentIndex: 0,
+      text: activePrayer.originalText,
+      translationEnglish: activePrayer.translationEnglish || "",
+      updatedAt: Date.now()
+    };
+
+    await set(ref(db, `sessions/${code}`), newSession);
+    setSessionCode(code);
+    setStatus(`session ${code} created`);
+  }
+
+  async function applySelectedPrayerToSession() {
+    if (!sessionCode || !activePrayer) return;
+
+    setIsPlaying(false);
+
     await update(ref(db, `sessions/${sessionCode}`), {
-      prayerId: prayer.id,
-      text: prayer.text,
+      traditionId: selectedTraditionId,
+      bookId: selectedBookId,
+      prayerId: activePrayer.id,
+      prayerTitle: activePrayer.title,
+      language: activePrayer.language,
+      text: activePrayer.originalText,
+      translationEnglish: activePrayer.translationEnglish || "",
       currentIndex: 0,
       updatedAt: Date.now()
     });
@@ -151,6 +439,7 @@ function pauseWords() {
   async function nextWord() {
     if (!sessionCode || !session) return;
     const maxIndex = Math.max(splitWords(session.text).length - 1, 0);
+
     await update(ref(db, `sessions/${sessionCode}`), {
       currentIndex: Math.min(session.currentIndex + 1, maxIndex),
       updatedAt: Date.now()
@@ -159,6 +448,7 @@ function pauseWords() {
 
   async function prevWord() {
     if (!sessionCode || !session) return;
+
     await update(ref(db, `sessions/${sessionCode}`), {
       currentIndex: Math.max(session.currentIndex - 1, 0),
       updatedAt: Date.now()
@@ -167,6 +457,9 @@ function pauseWords() {
 
   async function resetWords() {
     if (!sessionCode) return;
+
+    setIsPlaying(false);
+
     await update(ref(db, `sessions/${sessionCode}`), {
       currentIndex: 0,
       updatedAt: Date.now()
@@ -174,25 +467,125 @@ function pauseWords() {
   }
 
   function playWords() {
-  if (!sessionCode || !session) return;
-  setIsPlaying(true);
-}
+    if (!sessionCode || !session) return;
+    setIsPlaying(true);
+  }
 
-function pauseWords() {
-  setIsPlaying(false);
-}
+  function pauseWords() {
+    setIsPlaying(false);
+  }
+
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: 20, maxWidth: 1200, margin: "0 auto" }}>
+    <div
+      style={{
+        fontFamily: "Arial, sans-serif",
+        padding: 20,
+        maxWidth: 1300,
+        margin: "0 auto"
+      }}
+    >
       <h1>Prayer Master</h1>
-      <p>Current mode: <strong>Master</strong></p>
+      <p>
+        Current mode: <strong>Master</strong>
+      </p>
 
-      <div style={{ display: "grid", gridTemplateColumns: "320px 1fr", gap: 20 }}>
+      <div style={{ marginBottom: 15 }}>
+        <strong>Status:</strong> {status}
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "360px 1fr", gap: 20 }}>
         <div style={{ border: "1px solid #ccc", padding: 15, borderRadius: 8 }}>
-          <h3>Master controls</h3>
+          <h3>Library</h3>
+
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 15 }}>
+            <button onClick={seedSampleLibrary} style={{ padding: "10px 14px", cursor: "pointer" }}>
+              Load Sample Library
+            </button>
+
+            <label
+              style={{
+                padding: "10px 14px",
+                border: "1px solid #aaa",
+                cursor: "pointer",
+                display: "inline-block"
+              }}
+            >
+              Import JSON
+              <input
+                type="file"
+                accept=".json,application/json"
+                onChange={handleJsonImport}
+                style={{ display: "none" }}
+              />
+            </label>
+          </div>
 
           <div style={{ marginBottom: 15 }}>
+            <strong>Tradition</strong>
+            <select
+              value={selectedTraditionId}
+              onChange={(e) => {
+                setIsPlaying(false);
+                setSelectedTraditionId(e.target.value);
+              }}
+              style={{ display: "block", width: "100%", padding: 10, marginTop: 6 }}
+            >
+              {!traditions.length && <option value="">No library loaded</option>}
+              {traditions.map((tradition) => (
+                <option key={tradition.id} value={tradition.id}>
+                  {tradition.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ marginBottom: 15 }}>
+            <strong>Book</strong>
+            <select
+              value={selectedBookId}
+              onChange={(e) => {
+                setIsPlaying(false);
+                setSelectedBookId(e.target.value);
+              }}
+              style={{ display: "block", width: "100%", padding: 10, marginTop: 6 }}
+            >
+              {!selectedTradition?.books.length && <option value="">No books</option>}
+              {selectedTradition?.books.map((book) => (
+                <option key={book.id} value={book.id}>
+                  {book.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <strong>Prayer</strong>
+            <select
+              value={selectedPrayerId}
+              onChange={(e) => {
+                setIsPlaying(false);
+                setSelectedPrayerId(e.target.value);
+              }}
+              style={{ display: "block", width: "100%", padding: 10, marginTop: 6 }}
+            >
+              {!selectedBook?.prayers.length && <option value="">No prayers</option>}
+              {selectedBook?.prayers.map((prayer) => (
+                <option key={prayer.id} value={prayer.id}>
+                  {prayer.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 15 }}>
             <button onClick={createSession} style={{ padding: "10px 14px", cursor: "pointer" }}>
               Create Session
+            </button>
+            <button
+              onClick={applySelectedPrayerToSession}
+              style={{ padding: "10px 14px", cursor: "pointer" }}
+            >
+              Apply Prayer To Session
             </button>
           </div>
 
@@ -200,64 +593,69 @@ function pauseWords() {
             <strong>Session Code:</strong> {sessionCode || "Not created yet"}
           </div>
 
-          <div style={{ marginBottom: 20 }}>
-            <h4>Prayer Library</h4>
-            {PRAYERS.map((prayer) => (
-              <div key={prayer.id} style={{ marginBottom: 6 }}>
-                <button
-                  onClick={() => choosePrayer(prayer.id)}
-                  style={{
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "8px 10px",
-                    border: "1px solid #ccc",
-                    background: selectedPrayerId === prayer.id ? "black" : "white",
-                    color: selectedPrayerId === prayer.id ? "white" : "black",
-                    cursor: "pointer"
-                  }}
-                >
-                  {prayer.folder} — {prayer.title}
-                </button>
-              </div>
-            ))}
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 15 }}>
+            <button onClick={prevWord} style={{ padding: "10px 14px", cursor: "pointer" }}>
+              Back
+            </button>
+            <button onClick={nextWord} style={{ padding: "10px 14px", cursor: "pointer" }}>
+              Next
+            </button>
+            <button onClick={resetWords} style={{ padding: "10px 14px", cursor: "pointer" }}>
+              Reset
+            </button>
+            <button onClick={playWords} style={{ padding: "10px 14px", cursor: "pointer" }}>
+              Play
+            </button>
+            <button onClick={pauseWords} style={{ padding: "10px 14px", cursor: "pointer" }}>
+              Pause
+            </button>
           </div>
 
-<div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 15 }}>
-  <button onClick={prevWord} style={{ padding: "10px 14px", cursor: "pointer" }}>Back</button>
-  <button onClick={nextWord} style={{ padding: "10px 14px", cursor: "pointer" }}>Next</button>
-  <button onClick={resetWords} style={{ padding: "10px 14px", cursor: "pointer" }}>Reset</button>
-  <button onClick={playWords} style={{ padding: "10px 14px", cursor: "pointer" }}>Play</button>
-  <button onClick={pauseWords} style={{ padding: "10px 14px", cursor: "pointer" }}>Pause</button>
-</div>
+          <div style={{ marginTop: 10, marginBottom: 20 }}>
+            <label>
+              <strong>Speed (ms): </strong>
+              <input
+                type="number"
+                value={speedMs}
+                min={150}
+                step={50}
+                onChange={(e) => setSpeedMs(Number(e.target.value) || 600)}
+                style={{ padding: "6px 8px", width: 100, marginLeft: 8 }}
+              />
+            </label>
 
-<div style={{ marginTop: 10, marginBottom: 20 }}>
-  <label>
-    <strong>Speed (ms): </strong>
-    <input
-      type="number"
-      value={speedMs}
-      min={150}
-      step={50}
-      onChange={(e) => setSpeedMs(Number(e.target.value) || 600)}
-      style={{ padding: "6px 8px", width: 100, marginLeft: 8 }}
-    />
-  </label>
-  <span style={{ marginLeft: 12 }}>
-    {isPlaying ? "Playing" : "Paused"}
-  </span>
-</div>
+            <span style={{ marginLeft: 12 }}>{isPlaying ? "Playing" : "Paused"}</span>
+          </div>
         </div>
 
         <div style={{ border: "1px solid #ccc", padding: 20, borderRadius: 8 }}>
           <div style={{ marginBottom: 10 }}>
-            <strong>Current Prayer:</strong> {activePrayer.title}
+            <strong>Tradition:</strong> {selectedTradition?.title || "-"}
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <strong>Book:</strong> {selectedBook?.title || "-"}
+          </div>
+
+          <div style={{ marginBottom: 10 }}>
+            <strong>Current Prayer:</strong> {activePrayer?.title || "-"}
           </div>
 
           <div style={{ marginBottom: 20 }}>
-            <strong>Word Position:</strong> {words.length ? `${currentIndex + 1} / ${words.length}` : "0 / 0"}
+            <strong>Word Position:</strong>{" "}
+            {words.length ? `${currentIndex + 1} / ${words.length}` : "0 / 0"}
           </div>
 
-          <div style={{ fontSize: 28, lineHeight: 1.8 }}>
+          <div
+            style={{
+              fontSize: 28,
+              lineHeight: 1.8,
+              border: "1px solid #ddd",
+              borderRadius: 8,
+              padding: 16,
+              marginBottom: 20
+            }}
+          >
             {words.map((word, i) => (
               <span
                 key={i}
@@ -272,6 +670,22 @@ function pauseWords() {
                 {word}
               </span>
             ))}
+          </div>
+
+          <div
+            style={{
+              border: "1px solid #ddd",
+              borderRadius: 8,
+              padding: 16,
+              background: "#fafafa"
+            }}
+          >
+            <div style={{ fontSize: 18, fontWeight: "bold", marginBottom: 10 }}>
+              English Translation
+            </div>
+            <div style={{ fontSize: 18, lineHeight: 1.6 }}>
+              {session?.translationEnglish || activePrayer?.translationEnglish || "No translation"}
+            </div>
           </div>
         </div>
       </div>
