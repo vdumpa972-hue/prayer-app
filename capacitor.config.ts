@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.prayercompanion.app',
+  appId: 'com.vdumpa972.prayercompanion',
   appName: 'Prayer Companion',
   webDir: 'public',
   server: {
