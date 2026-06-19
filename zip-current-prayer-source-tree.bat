@@ -23,7 +23,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$tmpName = '_source_zip_stage_' + [guid]::NewGuid().ToString();" ^
   "$tmp = Join-Path $src $tmpName;" ^
   "New-Item -ItemType Directory -Path $tmp | Out-Null;" ^
-  "$exclude = @('node_modules','.next','.turbo','out','dist','coverage','.git','.vercel','source-zips','prayer-app-zips','backups',$tmpName);" ^
+  "$exclude = @('node_modules','.next','.turbo','out','dist','coverage','.git','.vercel','source-zips','prayer-app-zips','backups','android','ios',$tmpName);" ^
   "Get-ChildItem -Force | Where-Object { $exclude -notcontains $_.Name } | ForEach-Object { Copy-Item $_.FullName -Destination $tmp -Recurse -Force };" ^
   "Compress-Archive -Path (Join-Path $tmp '*') -DestinationPath $dest -Force;" ^
   "Remove-Item $tmp -Recurse -Force"
@@ -41,7 +41,7 @@ echo Source tree zip completed
 echo =========================
 echo Saved to: %ZIP_FILE%
 echo.
-echo This zip can be unzipped and rebuilt with npm install and npm run build.
+echo This zip excludes generated android/ios folders. Recreate them with: npx cap sync after npm install/build.
 echo.
 
 pause

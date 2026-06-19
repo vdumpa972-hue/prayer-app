@@ -22,7 +22,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$tmpName = '_backup_stage_' + [guid]::NewGuid().ToString();" ^
   "$tmp = Join-Path $src $tmpName;" ^
   "New-Item -ItemType Directory -Path $tmp | Out-Null;" ^
-  "$exclude = @('node_modules','.next','.turbo','.git','backups','.vercel','coverage','out','dist','source-zips','prayer-app-zips',$tmpName);" ^
+  "$exclude = @('node_modules','.next','.turbo','.git','backups','.vercel','coverage','out','dist','source-zips','prayer-app-zips','android','ios',$tmpName);" ^
   "Get-ChildItem -Force | Where-Object { $exclude -notcontains $_.Name } | ForEach-Object { Copy-Item $_.FullName -Destination $tmp -Recurse -Force };" ^
   "Compress-Archive -Path (Join-Path $tmp '*') -DestinationPath $dest -Force;" ^
   "Remove-Item $tmp -Recurse -Force"
@@ -81,6 +81,7 @@ echo =========================
 echo Build completed successfully
 echo =========================
 echo Backup saved to: %BACKUP_FILE%
+echo Backup excludes generated android/ios folders. Recreate them with: npx cap sync after npm install/build.
 echo.
 
 echo =========================
