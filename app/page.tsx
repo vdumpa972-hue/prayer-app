@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLanguage } from "@/components/LanguageProvider";
 
 const GUEST_DEMO_EMAIL = "vdumpa972+guest1@gmail.com";
-const GUEST_DEMO_PASSWORD = "liord972";
+const GUEST_DEMO_PASSWORD = "123456";
 
 type LandingCopy = {
   navAbout: string;
@@ -411,6 +411,11 @@ export default function PublicLandingPage() {
             <Link href="/auth?forceLogin=1" style={secondaryLinkStyle}>{copy.loginCta}</Link>
             <Link href="/follower" style={secondaryLinkStyle}>{copy.followerCta}</Link>
           </div>
+          <div style={policyLinksStyle}>
+            <Link href="/privacy" style={policyLinkStyle}>Privacy Policy</Link>
+            <Link href="/support" style={policyLinkStyle}>Support</Link>
+            <Link href="/terms" style={policyLinkStyle}>Terms of Service</Link>
+          </div>
         </section>
       </section>
     </main>
@@ -524,6 +529,22 @@ const footerCtaStyle = {
   borderRadius: 18,
   background: "rgba(247, 243, 232, 0.86)",
   border: "1px solid rgba(203, 184, 148, 0.95)",
+} as const;
+
+
+const policyLinksStyle = {
+  display: "flex",
+  gap: 14,
+  flexWrap: "wrap",
+  marginTop: 18,
+  paddingTop: 16,
+  borderTop: "1px solid rgba(203, 184, 148, 0.8)",
+} as const;
+
+const policyLinkStyle = {
+  color: "#1d4ed8",
+  fontWeight: 700,
+  textDecoration: "underline",
 } as const;
 
 const primaryLinkStyle = {

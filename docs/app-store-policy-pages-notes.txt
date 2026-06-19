@@ -1,0 +1,11 @@
+Added public pages needed for Google Play / Apple App Store review:
+
+/privacy  - Privacy Policy
+/support  - Support page
+/terms    - Terms of Service
+
+Also added landing page footer links to these pages.
+Use these deployed URLs after Vercel deployment:
+https://prayer-master.vercel.app/privacy
+https://prayer-master.vercel.app/support
+https://prayer-master.vercel.app/terms

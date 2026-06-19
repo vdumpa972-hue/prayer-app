@@ -18,7 +18,7 @@ type AuthMode = "login" | "signup" | "forgot";
 const LAST_LOGIN_EMAIL_KEY = "prayer_last_login_email";
 const AUTH_FRESH_LOGIN_EMAIL_KEY = "authFreshLoginEmail";
 const GUEST_DEMO_EMAIL = "vdumpa972+guest1@gmail.com";
-const GUEST_DEMO_PASSWORD = "liord972";
+const GUEST_DEMO_PASSWORD = "123456";
 
 export default function AuthPage() {
   const [mode, setMode] = useState<AuthMode>("login");

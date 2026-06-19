@@ -3,9 +3,12 @@
 import { auth, db } from "@/lib/firebase";
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  updatePassword,
   onAuthStateChanged,
   User,
 } from "firebase/auth";
@@ -147,6 +150,18 @@ export async function signInWithEmail(email: string, password: string) {
 
 export async function sendResetEmail(email: string) {
   await sendPasswordResetEmail(auth, email);
+}
+
+export async function changeCurrentUserPassword(currentPassword: string, newPassword: string) {
+  const user = auth.currentUser;
+
+  if (!user || !user.email) {
+    throw new Error("Please log in again before changing your password.");
+  }
+
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, newPassword);
 }
 
 export async function signOutUser() {

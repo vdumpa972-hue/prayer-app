@@ -1,7 +1,7 @@
 'use client';
 
 import { CSSProperties, FormEvent, useEffect, useState } from "react";
-import { signOutUser, subscribeToAuth } from "@/lib/auth";
+import { changeCurrentUserPassword, signOutUser, subscribeToAuth } from "@/lib/auth";
 import { loadUserProfile, saveUserProfile, UserProfileDetails } from "@/lib/profile";
 
 export default function ProfilePage() {
@@ -15,6 +15,13 @@ export default function ProfilePage() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPasswords, setShowPasswords] = useState(false);
+  const [passwordBusy, setPasswordBusy] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   useEffect(() => {
     const unsub = subscribeToAuth(async (user) => {
@@ -60,6 +67,45 @@ export default function ProfilePage() {
       setError(err?.message || "Could not save profile.");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function handlePasswordChange(event: FormEvent) {
+    event.preventDefault();
+    setPasswordBusy(true);
+    setPasswordMessage("");
+    setPasswordError("");
+
+    const trimmedNewPassword = newPassword.trim();
+
+    try {
+      if (!currentPassword) {
+        throw new Error("Enter your current password.");
+      }
+      if (trimmedNewPassword.length < 6) {
+        throw new Error("New password must be at least 6 characters.");
+      }
+      if (trimmedNewPassword !== confirmPassword.trim()) {
+        throw new Error("New password and confirmation do not match.");
+      }
+
+      await changeCurrentUserPassword(currentPassword, trimmedNewPassword);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setShowPasswords(false);
+      setPasswordMessage("Password changed successfully.");
+    } catch (err: any) {
+      const code = err?.code || "";
+      if (code.includes("wrong-password") || code.includes("invalid-credential")) {
+        setPasswordError("Current password is incorrect.");
+      } else if (code.includes("requires-recent-login")) {
+        setPasswordError("Please log out, log in again, then change your password.");
+      } else {
+        setPasswordError(err?.message || "Could not change password.");
+      }
+    } finally {
+      setPasswordBusy(false);
     }
   }
 
@@ -141,6 +187,67 @@ export default function ProfilePage() {
             </button>
           </div>
         </form>
+
+        <section style={styles.passwordSection}>
+          <h2 style={styles.sectionTitle}>Change password</h2>
+          <p style={styles.helpText}>Enter your current password, then type and confirm the new password.</p>
+
+          <form onSubmit={handlePasswordChange} style={styles.form}>
+            <label style={styles.label}>
+              Current password
+              <input
+                style={styles.input}
+                type={showPasswords ? "text" : "password"}
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                autoComplete="current-password"
+                placeholder="Current password"
+              />
+            </label>
+
+            <label style={styles.label}>
+              New password
+              <input
+                style={styles.input}
+                type={showPasswords ? "text" : "password"}
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                autoComplete="new-password"
+                placeholder="New password"
+              />
+            </label>
+
+            <label style={styles.label}>
+              Confirm new password
+              <input
+                style={styles.input}
+                type={showPasswords ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                placeholder="Confirm new password"
+              />
+            </label>
+
+            <label style={styles.checkRow}>
+              <input
+                type="checkbox"
+                checked={showPasswords}
+                onChange={(e) => setShowPasswords(e.target.checked)}
+              />
+              Show passwords
+            </label>
+
+            {passwordMessage ? <div style={styles.success}>{passwordMessage}</div> : null}
+            {passwordError ? <div style={styles.error}>{passwordError}</div> : null}
+
+            <div style={styles.row}>
+              <button type="submit" style={styles.primaryBtn} disabled={passwordBusy}>
+                {passwordBusy ? "Changing..." : "Change password"}
+              </button>
+            </div>
+          </form>
+        </section>
       </div>
     </main>
   );
@@ -247,6 +354,29 @@ const styles: Record<string, CSSProperties> = {
     cursor: "pointer",
     padding: 0,
     textDecoration: "underline",
+  },
+  passwordSection: {
+    marginTop: 26,
+    paddingTop: 22,
+    borderTop: "1px solid rgba(216,200,167,0.78)",
+  },
+  sectionTitle: {
+    margin: "0 0 8px 0",
+    fontSize: 24,
+    color: "#1f2937",
+  },
+  helpText: {
+    margin: "0 0 16px 0",
+    color: "#4b5563",
+    fontSize: 16,
+    lineHeight: 1.4,
+  },
+  checkRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 10,
+    fontSize: 17,
+    color: "#111827",
   },
   error: {
     background: "#fee2e2",
