@@ -27,7 +27,7 @@ export default function LanguageSwitcher() {
   }, [open]);
 
   return (
-    <div ref={wrapperRef} style={{ position: "fixed", top: 12, right: 12, left: isCompact ? 12 : "auto", zIndex: 1000, maxWidth: isCompact ? "calc(100vw - 24px)" : "auto", fontFamily: "Arial, Helvetica, sans-serif" }}>
+    <div ref={wrapperRef} className="global-language-switcher" style={{ position: "fixed", top: 12, right: 12, left: isCompact ? 12 : "auto", zIndex: 1000, maxWidth: isCompact ? "calc(100vw - 24px)" : "auto", fontFamily: "Arial, Helvetica, sans-serif" }}>
       <button type="button" onClick={() => setOpen((current) => !current)} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8, width: isCompact ? "100%" : "auto", padding: isCompact ? "10px 12px" : "8px 12px", borderRadius: 12, background: "rgba(255,255,255,0.96)", border: "1px solid rgba(148,163,184,0.35)", boxShadow: "0 10px 24px rgba(15,23,42,0.12)", color: "#0f172a", fontWeight: 700, cursor: "pointer" }} aria-expanded={open} aria-controls="global-language-picker-panel">
         <span style={{ fontSize: 14 }}>{t("common.language")}</span>
         <span style={{ fontSize: 14, color: "#1d4ed8" }}>{getLanguageLabel(language)}</span>

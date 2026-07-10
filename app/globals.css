@@ -39,3 +39,28 @@ body {
   background-size: cover;
   background-attachment: fixed;
 }
+
+/* Keep the fixed language control from covering Prayer Companion content. */
+@media (max-width: 640px) {
+  body:has(.global-language-switcher) {
+    padding-top: 64px;
+  }
+
+  .prayer-landing {
+    padding: 16px 10px 36px !important;
+  }
+
+  .prayer-landing-shell {
+    padding: 14px !important;
+  }
+
+  .prayer-hero-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+
+  .prayer-action-row > a,
+  .prayer-action-row > button {
+    width: 100%;
+  }
+}

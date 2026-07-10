@@ -298,6 +298,7 @@ export default function PublicLandingPage() {
 
   return (
     <main
+      className="prayer-landing"
       dir={isRtl ? "rtl" : "ltr"}
       style={{
         minHeight: "calc(100vh - 48px)",
@@ -306,7 +307,7 @@ export default function PublicLandingPage() {
         color: "#111827",
       }}
     >
-      <section style={shellStyle}>
+      <section className="prayer-landing-shell" style={shellStyle}>
         <nav style={navStyle} aria-label="Landing page sections">
           <a href="#about" style={navLinkStyle}>{copy.navAbout}</a>
           <a href="#benefits" style={navLinkStyle}>{copy.navBenefits}</a>
@@ -315,7 +316,7 @@ export default function PublicLandingPage() {
           <a href="#help" style={navLinkStyle}>{copy.navHelp}</a>
         </nav>
 
-        <div style={heroGridStyle}>
+        <div className="prayer-hero-grid" style={heroGridStyle}>
           <div>
             <div style={badgeStyle}>{copy.badge}</div>
             <h1 style={{ fontSize: "clamp(36px, 5vw, 66px)", lineHeight: 1.04, margin: "0 0 16px" }}>
@@ -324,7 +325,7 @@ export default function PublicLandingPage() {
             <p style={{ fontSize: 21, lineHeight: 1.55, maxWidth: 850, color: "#374151", margin: "0 0 26px" }}>
               {copy.subtitle}
             </p>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
+            <div className="prayer-action-row" style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 18 }}>
               <Link href="/trial?fresh=1" style={primaryLinkStyle}>{copy.primaryCta}</Link>
               <Link href="/auth?forceLogin=1" style={secondaryLinkStyle}>{copy.loginCta}</Link>
               <button type="button" onClick={openGuestDemo} style={secondaryButtonStyle}>
@@ -406,7 +407,7 @@ export default function PublicLandingPage() {
         <section style={footerCtaStyle}>
           <h2 style={{ margin: "0 0 10px", fontSize: 30 }}>{copy.footerTitle}</h2>
           <p style={{ margin: "0 0 18px", fontSize: 18, color: "#374151", lineHeight: 1.45 }}>{copy.footerText}</p>
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div className="prayer-action-row" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <Link href="/trial?fresh=1" style={primaryLinkStyle}>{copy.primaryCta}</Link>
             <Link href="/auth?forceLogin=1" style={secondaryLinkStyle}>{copy.loginCta}</Link>
             <Link href="/follower" style={secondaryLinkStyle}>{copy.followerCta}</Link>
