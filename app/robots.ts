@@ -4,8 +4,19 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: ["/", "/pricing", "/plans", "/about", "/docs", "/privacy", "/terms", "/support", "/account-deletion", "/delete-account"],
-      disallow: ["/api/", "/auth/", "/owner/", "/employee/", "/client/", "/admin/", "/super-admin/", "/profile/", "/billing/", "/subscription/", "/master/", "/follower/", "/trial/", "/stripe-success/"],
+      allow: ["/", "/plans", "/privacy", "/support", "/terms"],
+      disallow: [
+        "/api/",
+        "/app/",
+        "/auth/",
+        "/follower/",
+        "/master/",
+        "/owner/",
+        "/profile/",
+        "/subscription/",
+        "/super-admin/",
+        "/trial/",
+      ],
     },
     sitemap: "https://prayer-master.vercel.app/sitemap.xml",
     host: "https://prayer-master.vercel.app",
