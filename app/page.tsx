@@ -19,6 +19,9 @@ type LandingCopy = {
   loginCta: string;
   followerCta: string;
   ownerCta: string;
+  trustOne: string;
+  trustTwo: string;
+  trustThree: string;
   benefitTitle: string;
   benefitIntro: string;
   benefitOneTitle: string;
@@ -84,6 +87,9 @@ const COPY: Record<string, LandingCopy> = {
     loginCta: "Login",
     followerCta: "Join a Session",
     ownerCta: "Guest Demo",
+    trustOne: "Followers join without purchasing a plan.",
+    trustTwo: "Works across phones, tablets, and computers.",
+    trustThree: "The master controls the shared reading position.",
     benefitTitle: "Why this helps",
     benefitIntro:
       "Prayer Companion is built for families, study groups, small congregations, classes, and anyone leading shared reading or prayer.",
@@ -161,6 +167,9 @@ const COPY: Record<string, LandingCopy> = {
     loginCta: "Iniciar sesión",
     followerCta: "Unirse a una sesión",
     ownerCta: "Guest Demo",
+    trustOne: "Los seguidores se unen sin comprar un plan.",
+    trustTwo: "Funciona en teléfonos, tabletas y computadoras.",
+    trustThree: "El líder controla la posición compartida de lectura.",
     benefitTitle: "Por qué ayuda",
     benefitIntro:
       "Prayer Companion sirve para familias, grupos de estudio, congregaciones pequeñas, clases y lectura compartida.",
@@ -230,6 +239,9 @@ const COPY: Record<string, LandingCopy> = {
     loginCta: "כניסה",
     followerCta: "הצטרף לסשן",
     ownerCta: "Guest Demo",
+    trustOne: "משתתפים מצטרפים בלי לרכוש תוכנית.",
+    trustTwo: "עובד בטלפונים, טאבלטים ומחשבים.",
+    trustThree: "המוביל שולט במיקום הקריאה המשותף.",
     benefitTitle: "למה זה עוזר",
     benefitIntro:
       "Prayer Companion מתאים למשפחות, קבוצות לימוד, קהילות קטנות, שיעורים ותפילה או קריאה משותפת.",
@@ -341,6 +353,12 @@ export default function PublicLandingPage() {
             <p style={summaryLineStyle}>{copy.whoTwo}</p>
             <p style={summaryLineStyle}>{copy.whoThree}</p>
           </div>
+        </div>
+
+        <div className="prayer-trust-strip" aria-label="Prayer Companion key facts">
+          <span>{copy.trustOne}</span>
+          <span>{copy.trustTwo}</span>
+          <span>{copy.trustThree}</span>
         </div>
 
         <section id="about" style={sectionBlockStyle}>

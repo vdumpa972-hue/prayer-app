@@ -64,3 +64,30 @@ body {
     width: 100%;
   }
 }
+
+
+.prayer-trust-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.prayer-trust-strip span {
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: 12px 14px;
+  border: 1px solid rgba(203, 184, 148, 0.95);
+  border-radius: 14px;
+  background: rgba(255, 253, 248, 0.82);
+  color: #374151;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+  .prayer-trust-strip {
+    grid-template-columns: 1fr;
+  }
+}
