@@ -8,12 +8,15 @@ export default function manifest(): MetadataRoute.Manifest {
     id: isFollower ? '/follower-app' : '/master-app',
     name: isFollower ? 'Prayer Follower' : 'Prayer Master',
     short_name: isFollower ? 'Follower' : 'Master',
-    description: isFollower ? 'Prayer Follower' : 'Prayer Master',
+    description: isFollower
+      ? 'Follow a synchronized prayer session led from Prayer Companion.'
+      : 'Lead group prayer sessions, prepare sermons, and manage a prayer library.',
     start_url: '/',
     scope: '/',
     display: 'standalone',
     background_color: '#111827',
     theme_color: '#111827',
+    categories: ['lifestyle', 'education'],
     icons: [
       {
         src: '/icons/icon-192.png',
