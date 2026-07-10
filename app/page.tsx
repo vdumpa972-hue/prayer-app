@@ -435,6 +435,10 @@ export default function PublicLandingPage() {
             <Link href="/support" style={policyLinkStyle}>Support</Link>
             <Link href="/terms" style={policyLinkStyle}>Terms of Service</Link>
           </div>
+          <div aria-label="Other apps from the same developer" style={{ ...policyLinksStyle, marginTop: 12 }}>
+            <a href="https://landscapebuddy.net/" target="_blank" rel="noopener noreferrer" style={policyLinkStyle}>Landscape Buddy</a>
+            <a href="https://rebar-planner.vercel.app/" target="_blank" rel="noopener noreferrer" style={policyLinkStyle}>Rebar Planner</a>
+          </div>
         </section>
       </section>
     </main>
